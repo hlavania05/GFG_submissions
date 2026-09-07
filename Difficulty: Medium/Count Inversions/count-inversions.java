@@ -1,51 +1,56 @@
 class Solution {
-    static int count = 0;
-    static int inversionCount(int arr[]) {
-        count = 0;
-        mergeSort(arr, 0, arr.length-1);
-        return count;
+    public int inversionCount(int arr[]) {
+        // code here
+        return mergeSort(arr, 0, arr.length-1);
     }
-    public static int[] mergeSort(int[] arr, int i, int j){
-        if(i == j){
-            int[] ans = new int[1];
-            ans[0] = arr[i];
-            return ans;
+    public int mergeSort(int[] arr, int low, int high){
+        if(low >= high){
+            return 0;
         }
-        int mid = (i+j)/2;
-        int[] left = mergeSort(arr, i, mid);
-        int[] right = mergeSort(arr, mid+1, j);
-        return mergeArrays(left, right);
-
+        int cnt = 0;
+        
+        int mid = low + (high-low)/2;
+        cnt += mergeSort(arr, low, mid);
+        cnt += mergeSort(arr, mid+1, high);
+        cnt += merge(arr, low, mid, high);
+        return cnt;
     }
-    public static int[] mergeArrays(int[] arr1, int[] arr2){
-        int n = arr1.length;
-        int m = arr2.length;
-        int[] newArr = new int[n+m];
-        int i = 0;
-        int j = 0;
+    
+    public int merge(int[] arr, int low, int mid, int high){
+        int left = low; 
+        int right = mid+1;
+        
+        int[] temp = new int[high-low+1];
         int k = 0;
-        while(i < n && j < m){
-            if(arr1[i] <= arr2[j]){
-                newArr[k] = arr1[i];
-                i++;
+        int cnt = 0;
+        while(left <= mid && right <= high){
+            if(arr[left] <= arr[right]){
+                temp[k] = arr[left];
+                left++;
+                k++;
             }
             else{
-                count += (n-i);
-                newArr[k] = arr2[j];
-                j++;
+                temp[k] = arr[right];
+                cnt += (mid-left+1);
+                right++;
+                k++;
             }
+        }
+        
+        while(left <= mid){
+            temp[k] = arr[left];
+            left++;
             k++;
         }
-        while(i < n){
-            newArr[k] = arr1[i];
-            i++;
+        while(right <= high){
+            temp[k] = arr[right];
+            right++;
             k++;
         }
-        while(j < m){
-            newArr[k] = arr2[j];
-            j++;
-            k++;
+        
+        for(int i=0; i<temp.length; i++){
+            arr[low+i] = temp[i];
         }
-        return newArr;
+        return cnt;
     }
 }
